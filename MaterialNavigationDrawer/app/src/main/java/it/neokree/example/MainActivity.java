@@ -1,116 +1,159 @@
 package it.neokree.example;
 
-
-import android.graphics.drawable.ColorDrawable;
-import android.support.v4.app.Fragment;
+import android.app.ListActivity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 
-import it.neokree.materialnavigationdrawer.MaterialAccount;
-import it.neokree.materialnavigationdrawer.MaterialAccountListener;
-import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
-import it.neokree.materialnavigationdrawer.MaterialSection;
-import it.neokree.materialnavigationdrawer.MaterialSectionListener;
+import java.util.ArrayList;
 
-public class MainActivity extends MaterialNavigationDrawer implements MaterialAccountListener{
+import it.neokree.example.backpattern.BackAnywhere;
+import it.neokree.example.backpattern.BackPatternCustom;
+import it.neokree.example.backpattern.BackToFirst;
+import it.neokree.example.functionalities.ActionBarShadow;
+import it.neokree.example.functionalities.CustomAccountSection;
+import it.neokree.example.functionalities.DefaultSectionLoaded;
+import it.neokree.example.functionalities.KitkatStatusBar;
+import it.neokree.example.functionalities.LearningPatternDisabled;
+import it.neokree.example.functionalities.MultiPane;
+import it.neokree.example.functionalities.RealColorSections;
+import it.neokree.example.functionalities.RippleBackport;
+import it.neokree.example.functionalities.UniqueToolbarColor;
+import it.neokree.example.functionalities.master_child.MasterChildActivity;
+import it.neokree.example.light.Accounts;
+import it.neokree.example.light.CustomDrawerHeader;
+import it.neokree.example.light.ImageDrawerHeader;
+import it.neokree.example.light.MockedAccount;
+import it.neokree.example.light.NoDrawerHeader;
+import it.neokree.example.test.Test;
 
-    MaterialAccount account;
-    MaterialSection section1, section2, recorder, night, last, settingsSection;
-
-    @Override
-    public void init(Bundle savedInstanceState) {
-
-
-        // add first account
-        account = new MaterialAccount("NeoKree","neokree@gmail.com",new ColorDrawable(Color.parseColor("#9e9e9e")),this.getResources().getDrawable(R.drawable.bamboo));
-        this.addAccount(account);
-
-        MaterialAccount account2 = new MaterialAccount("Hatsune Miky","hatsune.miku@example.com",getResources().getDrawable(R.drawable.photo2),this.getResources().getDrawable(R.drawable.mat2));
-        this.addAccount(account2);
-
-        MaterialAccount account3 = new MaterialAccount("Example","example@example.com",getResources().getDrawable(R.drawable.photo),this.getResources().getDrawable(R.drawable.mat3));
-        this.addAccount(account3);
-
-        // set listener
-        this.setAccountListener(this);
-
-        //this.replaceDrawerHeader(this.getResources().getDrawable(R.drawable.mat2));
-
-        // create sections
-        section1 = this.newSection("Section 1",new FragmentIndex());
-        section2 = this.newSection("Section 2",new MaterialSectionListener() {
-            @Override
-            public void onClick(MaterialSection section) {
-                Toast.makeText(MainActivity.this,"Section 2 Clicked",Toast.LENGTH_SHORT).show();
-            }
-        });
-        // recorder section with icon and 10 notifications
-        recorder = this.newSection("Recorder",this.getResources().getDrawable(R.drawable.ic_mic_white_24dp),new FragmentIndex()).setNotifications(10);
-        // night section with icon, section color and notifications
-        night = this.newSection("Night Section", this.getResources().getDrawable(R.drawable.ic_hotel_grey600_24dp), new FragmentIndex())
-                .setSectionColor(Color.parseColor("#2196f3")).setNotifications(150);
-        // night section with section color
-        last = this.newSection("Last Section", new FragmentIndex()).setSectionColor(Color.parseColor("#ff9800"),Color.parseColor("#ef6c00"));
-
-        Intent i = new Intent(this,Profile.class);
-        settingsSection = this.newSection("Settings",this.getResources().getDrawable(R.drawable.ic_settings_black_24dp),i);
-
-        // add your sections to the drawer
-        this.addSection(section1);
-        this.addSection(section2);
-        this.addSubheader("Subheader");
-        this.addSection(recorder);
-        this.addSection(night);
-        this.addDivisor();
-        this.addSection(last);
-        this.addBottomSection(settingsSection);
-
-        this.addMultiPaneSupport();
-
-        this.setBackPattern(MaterialNavigationDrawer.BACKPATTERN_BACK_TO_FIRST);
-
-        // start thread
-        t.start();
-
-    }
-
+/**
+ * Created by neokree on 30/12/14.
+ */
+public class MainActivity extends ListActivity implements AdapterView.OnItemClickListener {
 
     @Override
-    public void onAccountOpening(MaterialAccount account) {
-        // open profile activity
-        Intent i = new Intent(this,Profile.class);
-        startActivity(i);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ArrayList<String> list = new ArrayList<String>();
+
+        list.add("Light - Mocked Account");
+        list.add("Dark  - Mocked Account");
+
+        list.add("Light - Accounts");
+        list.add("Dark  - Accounts");
+
+        list.add("Light - Drawer Header Image");
+        list.add("Dark  - Drawer Header Image");
+
+        list.add("Light - No Drawer Header");
+        list.add("Dark  - No Drawer Header");
+
+        list.add("Light - Custom Drawer Header");
+        list.add("Dark  - Custom Drawer Header");
+
+        list.add("Functionality: unique Toolbar Color");
+        list.add("Functionality: ripple backport support");
+        list.add("Functionality: multi pane support for tablet");
+        list.add("Functionality: custom section under account list");
+        list.add("Functionality: Kitkat trasluncent status bar");
+        list.add("Functionality: Master/Child example");
+        list.add("Functionality: section not pre-rendered");
+        list.add("Functionality: default section loaded");
+        list.add("Functionality: action bar shadow enabled (toolbar elevation)");
+        list.add("Functionality: learning pattern disabled");
+
+        list.add("Back Pattern: Back To first");
+        list.add("Back Pattern: Back Anywhere");
+        list.add("Back Pattern: Custom");
+
+//        list.add("Test");
+
+        this.setListAdapter(new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,list));
+        this.getListView().setOnItemClickListener(this);
     }
 
     @Override
-    public void onChangeAccount(MaterialAccount newAccount) {
-        // when another account is selected
-    }
-
-    // after 5 second (async task loading photo from website) change user photo
-    Thread t = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            try {
-                Thread.sleep(5000);
-                account.setPhoto(getResources().getDrawable(R.drawable.photo));
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        notifyAccountDataChanged();
-                        Toast.makeText(getApplicationContext(),"Loaded 'from web' user image",Toast.LENGTH_SHORT).show();
-                    }
-                });
-                //Log.w("PHOTO","user account photo setted");
-
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Intent intent;
+        switch(position) {
+            case 0:
+                intent = new Intent(this,MockedAccount.class);
+                break;
+            case 1:
+                intent = new Intent(this, it.neokree.example.dark.MockedAccount.class);
+                break;
+            case 2:
+                intent = new Intent(this,Accounts.class);
+                break;
+            case 3:
+                intent = new Intent(this, it.neokree.example.dark.Accounts.class);
+                break;
+            case 4:
+                intent = new Intent(this,ImageDrawerHeader.class);
+                break;
+            case 5:
+                intent = new Intent(this, it.neokree.example.dark.ImageDrawerHeader.class);
+                break;
+            case 6:
+                intent = new Intent(this,NoDrawerHeader.class);
+                break;
+            case 7:
+                intent = new Intent(this, it.neokree.example.dark.NoDrawerHeader.class);
+                break;
+            case 8:
+                intent = new Intent(this, CustomDrawerHeader.class);
+                break;
+            case 9:
+                intent = new Intent(this, it.neokree.example.dark.CustomDrawerHeader.class);
+                break;
+            case 10:
+                intent = new Intent(this, UniqueToolbarColor.class);
+                break;
+            case 11:
+                intent = new Intent(this, RippleBackport.class);
+                break;
+            case 12:
+                intent = new Intent(this, MultiPane.class);
+                break;
+            case 13:
+                intent = new Intent(this, CustomAccountSection.class);
+                break;
+            case 14:
+                intent = new Intent(this, KitkatStatusBar.class);
+                break;
+            case 15:
+                intent = new Intent(this, MasterChildActivity.class);
+                break;
+            case 16:
+                intent = new Intent(this, RealColorSections.class);
+                break;
+            case 17:
+                intent = new Intent(this, DefaultSectionLoaded.class);
+                break;
+            case 18:
+                intent = new Intent(this, ActionBarShadow.class);
+                break;
+            case 19:
+                intent = new Intent(this, LearningPatternDisabled.class);
+                break;
+            case 20:
+                intent = new Intent(this, BackToFirst.class);
+                break;
+            case 21:
+                intent = new Intent(this, BackAnywhere.class);
+                break;
+            case 22:
+                intent = new Intent(this, BackPatternCustom.class);
+                break;
+            case 23:
+                intent = new Intent(this, Test.class);
+                break;
+            default:
+                intent = null;
         }
-    });
+        startActivity(intent);
+    }
 }
